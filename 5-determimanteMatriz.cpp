@@ -92,7 +92,7 @@ double Matrices::cofactor(double** matriz, int orden, int fila, int columna){
             if (i != fila && j != columna){
                 submatriz[x][y] = matriz[i][j];
                 y++;
-                if (y >= n){
+                if (y >= n){ //seguir copiando
                     x++;
                     y = 0;
                 }
@@ -103,6 +103,7 @@ double Matrices::cofactor(double** matriz, int orden, int fila, int columna){
     delete []submatriz; // liberar memoria
     return pow(-1.0, fila + columna) * det;
 }
+
 double Matrices::determinante(double** matriz, int orden){
     int det = 0;
     if (orden == 1)

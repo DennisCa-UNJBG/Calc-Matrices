@@ -9,8 +9,6 @@ class Polinomio{
 public:
     Polinomio(int grado);
     double evaluarPoli(double x);
-    double evaluarDerivada(double x);
-    void obtenerDerivada();
     void imprimir();
 
 private:
@@ -26,41 +24,67 @@ int main()
 
     Polinomio f(grado);
 
-    double valor1 = 2; // Valor inicial
+    double xa = 0;
+    double xb = 1;
     double eps = 0.07; // Tolerancia
-    int maxIter = 100; // Número máximo de iteraciones
+    int maxIter = 30; // Número máximo de iteraciones
     bool cancelar = false;
-
-    int i = 0;      // Contador de iteraciones
-    double valor2 = valor1; // Valor actual
+    int i = 1;      // Contador de iteraciones
+    double xrOld = 0;
+    double xrNew = 0;
 
     cout << "La polinomio ingresado es: " << endl;
     f.imprimir();
 
-    cout << "La derivada del polinomio es: " << endl;
-    f.obtenerDerivada();
-
     cout << "Resultados:" << endl;
     cout << setw(10) << "Iteraciones"
-        << setw(10) << "X Old"
-        << setw(10) << "X New"
-        << setw(10) << "|Xnew - Xold|" << endl;
-    // Iteramos hasta que el valor actual sea suficientemente cercano a la raíz
+        << setw(10) << "xa"
+        << setw(10) << "xb"
+        << setw(12) << "xr"
+        << setw(12) << "f(xa)*f(xr)"
+        << setw(12) << "Epsilon" << endl;
+
+    // Iteracion 0
+    xrNew = (xa + xb)/2;
+
+    cout << setw(10) << i-1
+        << setw(10) << xa
+        << setw(10) << xb
+        << setw(10) << xrNew
+        << setw(12) << f.evaluarPoli(xrNew) * f.evaluarPoli(xa)
+        << setw(12) << "---" << endl;
+    // Aplicamos el algoritmo
+    if (f.evaluarPoli(xrNew) * f.evaluarPoli(xa) < 0)
+        xb = xrNew;
+    else
+        xa = xrNew;
+    xrOld = xrNew;
+
+    // Iteramos el resto
     while (!cancelar && (i < maxIter)){
-        // Aplicamos el algoritmo de Newton-Raphson
-        valor2 = (valor1 - (f.evaluarPoli(valor1) / f.evaluarDerivada(valor1)));
+        xrNew = (xa + xb)/2; // Hallar el punto medio del intervalo
+
         cout << setw(10) << i
-        << setw(10) << valor1
-        << setw(10) << valor2
-        << setw(10) << abs(valor2 - valor1) << endl;
-        if(eps > abs(valor2 - valor1))
+        << setw(10) << xa
+        << setw(10) << xb
+        << setw(10) << xrNew
+        << setw(12) << f.evaluarPoli(xrNew) * f.evaluarPoli(xa)
+        << setw(12) << abs((xrNew - xrOld)/xrNew) * 100 << endl;
+
+        // Aplicamos el algoritmo
+        if (f.evaluarPoli(xrNew) * f.evaluarPoli(xa) < 0)
+            xb = xrNew;
+        else
+            xa = xrNew;
+
+        if((abs((xrNew - xrOld)/xrNew) * 100) < eps)
             cancelar = true;
-        valor1 = valor2; // Actualizamos el valor actual
+        xrOld = xrNew;
         i++; // Incrementamos el contador de iteraciones
     }
 
     // Mostramos el resultado
-    cout << "La raiz aproximada es: " << valor2 << endl;
+    cout << "La raiz aproximada es: " << xrNew << endl;
 
     return 0;
 }
@@ -85,23 +109,6 @@ double Polinomio::evaluarPoli(double x){
     }
     //cout << result << endl;
     return result;
-}
-
-    // Método para evaluar la derivada del polinomio en un punto dado
-double Polinomio::evaluarDerivada(double x){
-    double result = 0;
-    for (int i = grado; i >= 1; i--){// no puede ser CERO
-        result += i * coeficientes[i] * pow(x, i - 1);
-    }
-    //cout << result << endl;
-    return result;
-}
-
-void Polinomio::obtenerDerivada(){
-    for (int i = grado; i >= 1; i--){
-        cout << coeficientes[i] * i << "X^" << (i - 1) << "  ";
-    }
-    cout << endl;
 }
 
 void Polinomio::imprimir(){
